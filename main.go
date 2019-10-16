@@ -24,35 +24,22 @@ func main() {
 		log.Fatal("can't open from path: ", err)
 	}
 
-	iter, err := repo.Branches()
-	if err != nil {
-		log.Fatal("can't get branches: ", err)
-	}
-
-	_ = iter.ForEach(func(reference *plumbing.Reference) error {
-		fmt.Println(reference.Name())
-		return nil
-	})
-
+	repo.c
 
 	worktree, err := repo.Worktree()
 	if err != nil {
 		log.Fatal("can't get work tree", err)
 	}
+
+	err = worktree.Checkout(&git.CheckoutOptions{Hash: plumbing.NewHash("82381fd4160e109a64e0d37688eb67a600a37a24")})
+
 	statuses, err := worktree.Status()
 	if err != nil {
 		log.Fatal("can't get work tree status", err)
 	}
 	println(statuses.String())
-	fileStatus := statuses.File("main.go")
-	if fileStatus == nil {
-		log.Fatal("can't get fileStatus for main.go")
-	}
-	fmt.Println("main.go -> ", string(fileStatus.Staging))
-	fmt.Println("main.go -> ", string(fileStatus.Worktree))
 
 }
-
 
 func openFromPath(path string) (*git.Repository, error) {
 	dot, wt, err := dotGitToOSFilesystems(path, true)
