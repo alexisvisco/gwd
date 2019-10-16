@@ -33,6 +33,24 @@ func main() {
 		fmt.Println(reference.Name())
 		return nil
 	})
+
+
+	worktree, err := repo.Worktree()
+	if err != nil {
+		log.Fatal("can't get work tree", err)
+	}
+	statuses, err := worktree.Status()
+	if err != nil {
+		log.Fatal("can't get work tree status", err)
+	}
+	println(statuses.String())
+	fileStatus := statuses.File("main.go")
+	if fileStatus == nil {
+		log.Fatal("can't get fileStatus for main.go")
+	}
+	fmt.Println("main.go -> ", string(fileStatus.Staging))
+	fmt.Println("main.go -> ", string(fileStatus.Worktree))
+
 }
 
 
