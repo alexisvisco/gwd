@@ -16,77 +16,55 @@ limitations under the License.
 package cmd
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/alexisvisco/gta/pkg/gta"
+	"github.com/alexisvisco/gta/pkg/gta/diff"
 	"github.com/spf13/cobra"
-	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
-	"gopkg.in/src-d/go-git.v4/utils/merkletrie/noder"
 )
 
+const localRef = ""
+
 func view(_ *cobra.Command, args []string) error {
-	oldRef := args[0]
-	newRef := ""
+	previousRef := args[0]
+	currentRef := localRef
 	if len(args) == 2 {
-		newRef = args[1]
+		currentRef = args[1]
 	}
 
-	oldNoder, newNoder, e := getNoders(oldRef, newRef)
-	if e != nil {
-		return e
-	}
-
-	changes, err := merkletrie.DiffTree(oldNoder, newNoder, gta.DiffTreeIsEquals)
+	previousNoder, err := gta.GetTree(repository, previousRef)
 	if err != nil {
-		return errors.New("unable to compare changes between refs")
+		return err
 	}
 
-	packages := make(map[string]bool)
-	for _, ch := range changes {
-		path := ch.To
-		if path.String() == "" {
-			path = ch.From
+	if currentRef == localRef {
+		packages, err := diff.LocalDiff(repository, previousNoder)
+		if err != nil {
+			return err
 		}
 
-		if path.IsDir() {
-			packages[path.String()] = true
-			continue
+		fmt.Println(packages.String())
+	} else {
+		currentNoder, err := gta.GetTree(repository, currentRef)
+		if err != nil {
+			return err
 		}
 
-		if len(path) == 1 {
-			packages["."] = true
-			continue
+		packages, err := diff.Diff(repository, previousNoder, currentNoder)
+		if err != nil {
+			return err
 		}
 
-		pathDir := path[len(path)-2]
-		if pathDir.IsDir() {
-			packages[pathDir.String()] = true
-		}
+		fmt.Println(packages.String())
 	}
 
-	for directories := range packages {
-		fmt.Println(directories)
-	}
 	return nil
-}
-
-func getNoders(oldRef string, newRef string) (newNoder noder.Noder, oldNoder noder.Noder, err error) {
-	oldNoder, err = gta.GetTree(repository, oldRef)
-	if err != nil {
-		return nil, nil, err
-	}
-	newNoder, err = gta.GetTree(repository, newRef)
-	if err != nil {
-		return nil, nil, err
-	}
-	return oldNoder, newNoder, nil
 }
 
 // viewCmd represents the view command
 var viewCmd = &cobra.Command{
-	Use:   "view <old ref> [<new ref>]",
-	Short: "View packages that have changed from a revision",
+	Use:   "view <previous ref> [<current re>]",
+	Short: "View packages that have changed between a previous ref and the current ref ",
 	Long: "This command accept two arguments.\n" +
 		"Each arguments can be either a tag, a branch or a specific commit hash.\n" +
 		"If 'new' argument is not specified, gta will use your current uncommitted changes.\n" +

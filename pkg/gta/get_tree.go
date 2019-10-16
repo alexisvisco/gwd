@@ -6,22 +6,10 @@ import (
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
-	"gopkg.in/src-d/go-git.v4/utils/merkletrie/index"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie/noder"
 )
 
 func GetTree(repo *git.Repository, ref string) (noder.Noder, error) {
-
-	// local uncommitted changes
-	if ref == "" {
-		idx, err := repo.Storer.Index()
-		if err != nil {
-			return nil, errors.New("unable to get local uncommitted changes")
-		}
-		return index.NewRootNode(idx), nil
-	}
-
-	// by a branch, tag or commit hash
 	if tree := getTreeByBranchOrTag(repo, ref); tree != nil {
 		return object.NewTreeRootNode(tree), nil
 	}

@@ -1,4 +1,4 @@
-package gta
+package diff
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 
 var emptyNoderHash = make([]byte, 24)
 
-func DiffTreeIsEquals(a, b noder.Hasher) bool {
+func diffTreeIsEquals(a, b noder.Hasher) bool {
 	hashA := a.Hash()
 	hashB := b.Hash()
 
