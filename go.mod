@@ -3,8 +3,8 @@ module github.com/alexisvisco/gta
 go 1.12
 
 require (
+	github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718
 	github.com/spf13/cobra v0.0.5
-	github.com/spf13/viper v1.4.0 // indirect
 	github.com/stretchr/testify v1.4.0 // indirect
 	golang.org/x/sys v0.0.0-20191010194322-b09406accb47 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect

@@ -3,9 +3,11 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/spf13/cobra"
+
 	"github.com/alexisvisco/gta/pkg/gta"
 	"github.com/alexisvisco/gta/pkg/gta/diff"
-	"github.com/spf13/cobra"
+	"github.com/alexisvisco/gta/pkg/gta/vars"
 )
 
 const localRef = ""
@@ -17,25 +19,25 @@ func view(_ *cobra.Command, args []string) error {
 		currentRef = args[1]
 	}
 
-	previousNoder, err := gta.GetTree(repository, previousRef)
+	previousNoder, err := gta.GetTree(vars.Repository, previousRef)
 	if err != nil {
 		return err
 	}
 
 	if currentRef == localRef {
-		packages, err := diff.LocalDiff(repository, previousNoder)
+		packages, err := diff.LocalDiff(vars.Repository, previousNoder)
 		if err != nil {
 			return err
 		}
 
 		fmt.Print(packages.String())
 	} else {
-		currentNoder, err := gta.GetTree(repository, currentRef)
+		currentNoder, err := gta.GetTree(vars.Repository, currentRef)
 		if err != nil {
 			return err
 		}
 
-		packages, err := diff.Diff(repository, previousNoder, currentNoder)
+		packages, err := diff.Diff(vars.Repository, previousNoder, currentNoder)
 		if err != nil {
 			return err
 		}

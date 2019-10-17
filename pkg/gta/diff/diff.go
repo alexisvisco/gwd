@@ -1,13 +1,14 @@
 package diff
 
 import (
-	"github.com/alexisvisco/gta/pkg/gta/packages"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/format/gitignore"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie/filesystem"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie/noder"
+
+	"github.com/alexisvisco/gta/pkg/gta/packages"
 )
 
 func LocalDiff(repo *git.Repository, previous noder.Noder) (packages.Packages, error) {
@@ -50,6 +51,20 @@ func getSubmodulesStatus(w *git.Worktree) (map[string]plumbing.Hash, error) {
 	return o, nil
 }
 
+func Diff(repo *git.Repository, previous noder.Noder, current noder.Noder) (packages.Packages, error) {
+	wt, err := repo.Worktree()
+	if err != nil {
+		return nil, err
+	}
+
+	changes, err := merkletrie.DiffTree(previous, current, diffTreeIsEquals)
+	if err != nil {
+		return nil, err
+	}
+
+	return packages.FromChanges(excludeIgnoredChanges(wt, changes), wt), nil
+}
+
 func excludeIgnoredChanges(w *git.Worktree, changes merkletrie.Changes) merkletrie.Changes {
 	patterns, err := gitignore.ReadPatterns(w.Filesystem, nil)
 	if err != nil {
@@ -84,18 +99,4 @@ func excludeIgnoredChanges(w *git.Worktree, changes merkletrie.Changes) merkletr
 		res = append(res, ch)
 	}
 	return res
-}
-
-func Diff(repo *git.Repository, previous noder.Noder, current noder.Noder) (packages.Packages, error) {
-	wt, err := repo.Worktree()
-	if err != nil {
-		return nil, err
-	}
-
-	changes, err := merkletrie.DiffTree(previous, current, diffTreeIsEquals)
-	if err != nil {
-		return nil, err
-	}
-
-	return packages.FromChanges(excludeIgnoredChanges(wt, changes)), nil
 }
