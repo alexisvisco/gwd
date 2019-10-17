@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/src-d/go-git.v4"
 
-	"github.com/alexisvisco/gta/pkg/gta/vars"
 	"github.com/alexisvisco/gta/pkg/gta/parsing"
+	"github.com/alexisvisco/gta/pkg/gta/vars"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -37,12 +37,25 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-
 	rootCmd.PersistentFlags().StringVarP(
 		&vars.ModuleName,
 		"module-name",
 		"m", parsing.GetModuleName(),
 		"module name is used to known the import names for this project",
+	)
+
+	rootCmd.PersistentFlags().BoolVarP(
+		&vars.OutputJson,
+		"json",
+		"J", false,
+		"output of commands will be json format",
+	)
+
+	rootCmd.PersistentFlags().BoolVarP(
+		&vars.OutputVerbose,
+		"verbose",
+		"V", false,
+		"output of commands will be in an human verbose format",
 	)
 
 	if err := rootCmd.Execute(); err != nil {

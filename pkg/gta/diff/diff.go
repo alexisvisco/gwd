@@ -62,7 +62,7 @@ func Diff(repo *git.Repository, previous noder.Noder, current noder.Noder) (pack
 		return nil, err
 	}
 
-	return packages.FromChanges(excludeIgnoredChanges(wt, changes), wt), nil
+	return packages.FromChanges(excludeIgnoredChanges(wt, changes)), nil
 }
 
 func excludeIgnoredChanges(w *git.Worktree, changes merkletrie.Changes) merkletrie.Changes {

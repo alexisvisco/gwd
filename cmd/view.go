@@ -30,7 +30,7 @@ func view(_ *cobra.Command, args []string) error {
 			return err
 		}
 
-		fmt.Print(packages.String())
+		gta.Output(packages)
 	} else {
 		currentNoder, err := gta.GetTree(vars.Repository, currentRef)
 		if err != nil {
@@ -42,7 +42,7 @@ func view(_ *cobra.Command, args []string) error {
 			return err
 		}
 
-		fmt.Print(packages.String())
+		gta.Output(packages)
 	}
 
 	return nil

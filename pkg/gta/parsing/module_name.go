@@ -3,7 +3,6 @@ package parsing
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
 	"os"
 	"path"
@@ -28,13 +27,10 @@ func GetModuleName() string {
 	for {
 		line, err := getFullLine(reader)
 		if err != nil && err != io.EOF {
-			fmt.Println(err)
 			return ""
 		}
-		fmt.Println("", string(line))
 
 		if bytes.Contains(line, []byte("module")) {
-			fmt.Println("contain module")
 			return getModuleName(line)
 		}
 
