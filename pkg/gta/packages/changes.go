@@ -1,7 +1,6 @@
 package packages
 
 import (
-	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -59,13 +58,12 @@ func FromChanges(changes merkletrie.Changes, wt *git.Worktree) Packages {
 
 		packageName := getPackageName(filepath)
 		if _, ok := packages[packageName] ; ok {
-			fmt.Println("already in packages", packageName)
 			return nil
 		}
 		if _, ok := packagesWhichContainModifiedPackage[packageName] ; ok {
-			fmt.Println("already in the packages which contain modified package")
 			return nil
 		}
+
 
 		imports := parsing.GetImports(filepath)
 
@@ -75,9 +73,15 @@ func FromChanges(changes merkletrie.Changes, wt *git.Worktree) Packages {
 			}
 
 			importPackageName := getPackageName(i)
-			fmt.Println("import package name", importPackageName)
-			//_, containModifiedPackage := packages[i]
-			//if packagesWhichContainModifiedPackage[]
+
+			packagesWhichContainModifiedPackage[packageName] = PresenceReason{
+				Reason:          ReasonContainModifiedPackage,
+				ModifiedPackage: &importPackageName,
+			}
+		}
+
+		for k, v := range packagesWhichContainModifiedPackage {
+			packages[k] = v
 		}
 
 		return nil

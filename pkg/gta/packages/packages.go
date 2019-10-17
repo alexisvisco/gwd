@@ -21,7 +21,7 @@ func (p Packages) String() string {
 	str := ""
 	for k, v := range p {
 		if v.Reason == ReasonContainModifiedPackage {
-			str += fmt.Sprintln(k, "import", `"`+*v.ModifiedPackage+`"`)
+			str += fmt.Sprintln(k, "(import", `"`+*v.ModifiedPackage+`")`)
 		} else {
 			str += fmt.Sprintln(k)
 		}
