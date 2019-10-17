@@ -1,4 +1,4 @@
-package gta
+package diff
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie/noder"
 )
 
-func GetTree(repo *git.Repository, ref string) (noder.Noder, error) {
+func getTree(repo *git.Repository, ref string) (noder.Noder, error) {
 	if tree := getTreeByBranchOrTag(repo, ref); tree != nil {
 		return object.NewTreeRootNode(tree), nil
 	}

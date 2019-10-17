@@ -9,9 +9,30 @@ import (
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie/noder"
 
 	"github.com/alexisvisco/gta/pkg/gta/packages"
+	"github.com/alexisvisco/gta/pkg/gta/vars"
 )
 
-func LocalDiff(repo *git.Repository, previous noder.Noder) (packages.Packages, error) {
+const localRef = ""
+
+func Diff(repository *git.Repository, previousRef, currentRef string) (packages.Packages, error) {
+	previousNoder, err := getTree(repository, previousRef)
+	if err != nil {
+		return nil, err
+	}
+
+	if currentRef == localRef {
+		return localDiff(vars.Repository, previousNoder)
+	} else {
+		currentNoder, err := getTree(repository, currentRef)
+		if err != nil {
+			return nil, err
+		}
+
+		return diff(vars.Repository, previousNoder, currentNoder)
+	}
+}
+
+func localDiff(repo *git.Repository, previous noder.Noder) (packages.Packages, error) {
 	wt, err := repo.Worktree()
 	if err != nil {
 		return nil, err
@@ -23,7 +44,7 @@ func LocalDiff(repo *git.Repository, previous noder.Noder) (packages.Packages, e
 	}
 	current := filesystem.NewRootNode(wt.Filesystem, submodules)
 
-	return Diff(repo, previous, current)
+	return diff(repo, previous, current)
 }
 
 func getSubmodulesStatus(w *git.Worktree) (map[string]plumbing.Hash, error) {
@@ -51,7 +72,7 @@ func getSubmodulesStatus(w *git.Worktree) (map[string]plumbing.Hash, error) {
 	return o, nil
 }
 
-func Diff(repo *git.Repository, previous noder.Noder, current noder.Noder) (packages.Packages, error) {
+func diff(repo *git.Repository, previous noder.Noder, current noder.Noder) (packages.Packages, error) {
 	wt, err := repo.Worktree()
 	if err != nil {
 		return nil, err

@@ -17,7 +17,7 @@ var rootCmd = &cobra.Command{
 	Version: "0.1",
 	Use:     "gta",
 	Short:   "Use gta to tests only packages which changes from revision.",
-	Example: `- gta view master feature/ok - will show the packages affected
+	Example: `- gta changes master feature/ok - will show the packages affected
 - gta run master feature/ok  - will tests the packages affected`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		if vars.ModuleName == "" {
@@ -40,7 +40,7 @@ func Execute() {
 	rootCmd.PersistentFlags().StringVarP(
 		&vars.ModuleName,
 		"module-name",
-		"m", parsing.GetModuleName(),
+		"M", parsing.GetModuleName(),
 		"module name is used to known the import names for this project",
 	)
 

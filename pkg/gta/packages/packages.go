@@ -62,7 +62,7 @@ func (p Packages) Human() {
 		buffer.WriteString(packageName + "\n")
 	}
 
-	fmt.Println(buffer.String())
+	fmt.Print(buffer.String())
 }
 
 func (p Packages) HumanVerbose() {
@@ -78,51 +78,54 @@ func (p Packages) HumanVerbose() {
 		buffer.WriteString(packageName + "\n")
 		details := p[packageName]
 
-		//----
+		p.verboseFilesAffected(details, buffer)
+		p.verboseImportedBy(details, buffer)
+	}
 
-		files := make([]string, len(details.Files))
+	fmt.Print(buffer.String())
+}
+
+func (p Packages) verboseImportedBy(details *Details, buffer *bytes.Buffer) {
+	if len(details.ImportedBy) > 0 {
+		buffer.WriteString("  imported by:\n")
+
+		packagesList := make([]string, len(details.ImportedBy))
 		i := 0
-		for file := range details.Files {
-			files[i] = file
+		for packageName := range details.ImportedBy {
+			packagesList[i] = packageName
 			i++
 		}
 
-		sort.Strings(files)
-		buffer.WriteString("  files affected:\n")
-		for _, file := range files {
-			buffer.WriteString(fmt.Sprintf("    %s %s\n", actionToSymbol(details.Files[file]), file))
-		}
-
-		//----
-		if len(details.ImportedBy) > 0 {
-			buffer.WriteString("  imported by:\n")
-
-			packagesList := make([]string, len(details.ImportedBy))
-			i := 0
-			for packageName := range details.ImportedBy {
-				packagesList[i] = packageName
-				i++
-			}
-
-			for _, packageName := range packagesList {
-				buffer.WriteString(fmt.Sprintf("    %s (%d file(s))\n", packageName, details.ImportedBy[packageName]))
-			}
+		for _, packageName := range packagesList {
+			buffer.WriteString(fmt.Sprintf("    %s (%d file(s))\n", packageName, details.ImportedBy[packageName]))
 		}
 	}
+}
 
-	fmt.Println(buffer.String())
+func (p Packages) verboseFilesAffected(details *Details, buffer *bytes.Buffer) {
+	files := make([]string, len(details.Files))
+	i := 0
+	for file := range details.Files {
+		files[i] = file
+		i++
+	}
+	sort.Strings(files)
+	buffer.WriteString("  files affected:\n")
+	for _, file := range files {
+		buffer.WriteString(fmt.Sprintf("    %s %s\033[0m\n", actionToSymbol(details.Files[file]), file))
+	}
 }
 
 func actionToSymbol(action merkletrie.Action) string {
 	switch action {
 	case merkletrie.Delete:
-		return "D"
+		return "\033[31mD"
 	case merkletrie.Insert:
-		return "A"
+		return "\033[32mA"
 	case merkletrie.Modify:
-		return "M"
+		return "\033[33mM"
 	}
-	return "?"
+	return "\033[0;36m?"
 }
 
 func (p Packages) Json() {
