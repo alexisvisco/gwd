@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/alexisvisco/gta/pkg/gta"
 	"github.com/alexisvisco/gta/pkg/gta/diff"
 	"github.com/alexisvisco/gta/pkg/gta/vars"
 )
@@ -32,15 +33,48 @@ func run(_ *cobra.Command, _ []string) error {
 		}
 	}
 
+	gta.Output(TestOutput{packages: packagesList})
+
+	return nil
+}
+
+type TestOutput struct {
+	packages []string
+}
+
+func (t TestOutput) Human() {
 	cmd := exec.Command(
 		"sh",
 		"-c",
-		strings.ReplaceAll(command, "${packages}", strings.Join(packagesList, " ")),
+		strings.ReplaceAll(command, "${packages}", strings.Join(t.packages, " ")),
 	)
 
 	bytes, err := cmd.Output()
-	fmt.Print(string(bytes))
-	return err
+	if err != nil {
+		fmt.Printf("error: %s\n", err.Error())
+	} else {
+		fmt.Print(string(bytes))
+	}
+}
+
+func (t TestOutput) HumanVerbose() {
+	fmt.Println("verbose mode not yet implemented, using default mode")
+	t.Human()
+}
+
+func (t TestOutput) Json() {
+	cmd := exec.Command(
+		"sh",
+		"-c",
+		strings.ReplaceAll(command, "${packages}", strings.Join(t.packages, " "))+" -json",
+	)
+
+	bytes, err := cmd.Output()
+	if err != nil {
+		fmt.Printf(`{"error": %q}\n`, err.Error())
+	} else {
+		fmt.Print(string(bytes))
+	}
 }
 
 // changesCommand represents the changes command
