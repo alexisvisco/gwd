@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/alexisvisco/gta/pkg/gta/diff"
-	"github.com/alexisvisco/gta/pkg/gta/taskgroup"
 	"github.com/alexisvisco/gta/pkg/gta/vars"
 )
 
@@ -18,30 +18,29 @@ func run(_ *cobra.Command, _ []string) error {
 		return err
 	}
 
-	group := taskgroup.WithLimit(16)
+	packagesList := make([]string, 0, len(packages))
 
+	checkAndAppend := func(dir string) {
+		if _, err := os.Stat(dir); !os.IsNotExist(err) {
+			packagesList = append(packagesList, dir)
+		}
+	}
 	for packageName, detail := range packages {
-		p := packageName
-
-		group.Go(func() error {
-			cmd := exec.Command("sh", "-c", strings.ReplaceAll(command, "${package}", "./"+p))
-			bytes, _ := cmd.Output()
-			fmt.Print(string(bytes))
-			return nil
-		})
-
+		checkAndAppend("./" + packageName)
 		for packageNameImportedBy := range detail.ImportedBy {
-			x := packageNameImportedBy
-			group.Go(func() error {
-				cmd := exec.Command("sh", "-c", strings.ReplaceAll(command, "${package}", "./"+x))
-				bytes, _ := cmd.Output()
-				fmt.Print(string(bytes))
-				return nil
-			})
+			checkAndAppend("./" + packageNameImportedBy)
 		}
 	}
 
-	return group.Wait()
+	cmd := exec.Command(
+		"sh",
+		"-c",
+		strings.ReplaceAll(command, "${packages}", strings.Join(packagesList, " ")),
+	)
+
+	bytes, err := cmd.Output()
+	fmt.Print(string(bytes))
+	return err
 }
 
 // changesCommand represents the changes command
@@ -79,8 +78,8 @@ func init() {
 	testCommand.PersistentFlags().StringVar(
 		&command,
 		"command",
-		"go test ${package}",
-		"execute the command with replacing the ${package} placeholder",
+		"go test ${packages}",
+		"execute the command with replacing the ${packages} placeholder",
 	)
 
 	rootCmd.AddCommand(testCommand)

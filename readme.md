@@ -16,7 +16,7 @@ That's exactly what I did. The tool `gta` is now open source, as wanted some com
 ### Commands
 
 - `gta changes --previous-ref="master"` which show the changes between master and the staging (uncommitted changes).
-- `gta run --previous-ref="master"` which run the test for the package which changes and the packages that import changed packages.
+- `gta test --previous-ref="master"` which run the test for the package which changes and the packages that import changed packages.
 
 Each of theses commands have in common 2 flags:
 
