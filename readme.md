@@ -6,7 +6,7 @@ gwd for go workspace diff
 
 It allows you to easily track :
 - when a module change
-- when packages of a module change and package that import it
+- when packages of a module change and packages that import them
 
 As an example, suppose a change is committed which modifies a package, libs/hypervisor. 
 Suppose this package is imported by another package, services/controller.
