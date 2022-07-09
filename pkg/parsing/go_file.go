@@ -1,13 +1,15 @@
 package parsing
 
 import (
+	"github.com/alexisvisco/gwd/pkg/diff/packages"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"io/ioutil"
 )
 
-func GetImports(filepath string) []string {
+// GetImports retrieve imports of a go file
+func GetImports(filepath string) []packages.ImportPath {
 	set := token.NewFileSet()
 	bytes, err := ioutil.ReadFile(filepath)
 	if err != nil {
@@ -18,17 +20,16 @@ func GetImports(filepath string) []string {
 		return nil
 	}
 
-	var paths []string
+	var paths []packages.ImportPath
 	importList := imports(set, astFile)
 	for _, list := range importList {
 		for _, i := range list {
-			paths = append(paths, i.Path.Value[1:len(i.Path.Value)-1])
+			paths = append(paths, packages.ImportPath(i.Path.Value[1:len(i.Path.Value)-1]))
 		}
 	}
 
 	return paths
 }
-
 
 func imports(tokenFileSet *token.FileSet, f *ast.File) [][]*ast.ImportSpec {
 	var groups [][]*ast.ImportSpec

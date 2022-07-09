@@ -16,9 +16,9 @@ limitations under the License.
 package main
 
 import (
-	"github.com/alexisvisco/gta/cmd"
+	"github.com/alexisvisco/gwd/commands"
 )
 
 func main() {
-	cmd.Execute()
+	commands.Execute()
 }

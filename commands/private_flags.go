@@ -1,8 +1,6 @@
-package cmd
+package commands
 
 var (
 	previousReference string
 	currentReference  string
-
-	command string
 )

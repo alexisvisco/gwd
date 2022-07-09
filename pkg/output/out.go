@@ -1,6 +1,8 @@
-package gta
+package output
 
-import "github.com/alexisvisco/gta/pkg/gta/vars"
+import (
+	"github.com/alexisvisco/gwd/pkg/vars"
+)
 
 const JsonError = `{"error": "unable to output json from this command"}`
 
@@ -10,7 +12,7 @@ type CommandOutput interface {
 	Json()
 }
 
-func Output(output CommandOutput) {
+func Print(output CommandOutput) {
 	if vars.OutputJson {
 		output.Json()
 		return
@@ -21,4 +23,10 @@ func Output(output CommandOutput) {
 	}
 
 	output.Human()
+}
+
+func Error(err error) {
+	if err != nil {
+		Print(&errOutput{err.Error()})
+	}
 }

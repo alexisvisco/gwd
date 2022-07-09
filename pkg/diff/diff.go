@@ -1,23 +1,23 @@
 package diff
 
 import (
+	"github.com/alexisvisco/gwd/pkg/diff/modules"
+	"github.com/alexisvisco/gwd/pkg/vars"
+	"github.com/pkg/errors"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/format/gitignore"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie/filesystem"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie/noder"
-
-	"github.com/alexisvisco/gta/pkg/gta/packages"
-	"github.com/alexisvisco/gta/pkg/gta/vars"
 )
 
 const localRef = ""
 
-func Diff(repository *git.Repository, previousRef, currentRef string) (packages.Packages, error) {
+func Diff(repository *git.Repository, previousRef, currentRef string) (*modules.Modules, error) {
 	previousNoder, err := getTree(repository, previousRef)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to get previous tree")
 	}
 
 	if currentRef == localRef {
@@ -25,14 +25,14 @@ func Diff(repository *git.Repository, previousRef, currentRef string) (packages.
 	} else {
 		currentNoder, err := getTree(repository, currentRef)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "failed to get current tree")
 		}
 
 		return diff(vars.Repository, previousNoder, currentNoder)
 	}
 }
 
-func localDiff(repo *git.Repository, previous noder.Noder) (packages.Packages, error) {
+func localDiff(repo *git.Repository, previous noder.Noder) (*modules.Modules, error) {
 	wt, err := repo.Worktree()
 	if err != nil {
 		return nil, err
@@ -45,6 +45,22 @@ func localDiff(repo *git.Repository, previous noder.Noder) (packages.Packages, e
 	current := filesystem.NewRootNode(wt.Filesystem, submodules)
 
 	return diff(repo, previous, current)
+}
+
+func diff(repo *git.Repository, previous noder.Noder, current noder.Noder) (*modules.Modules, error) {
+	wt, err := repo.Worktree()
+	if err != nil {
+		return nil, err
+	}
+
+	changes, err := merkletrie.DiffTree(previous, current, diffTreeIsEquals)
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := modules.FromChanges(excludeIgnoredChanges(wt, changes))
+
+	return m, err
 }
 
 func getSubmodulesStatus(w *git.Worktree) (map[string]plumbing.Hash, error) {
@@ -72,20 +88,7 @@ func getSubmodulesStatus(w *git.Worktree) (map[string]plumbing.Hash, error) {
 	return o, nil
 }
 
-func diff(repo *git.Repository, previous noder.Noder, current noder.Noder) (packages.Packages, error) {
-	wt, err := repo.Worktree()
-	if err != nil {
-		return nil, err
-	}
-
-	changes, err := merkletrie.DiffTree(previous, current, diffTreeIsEquals)
-	if err != nil {
-		return nil, err
-	}
-
-	return packages.FromChanges(excludeIgnoredChanges(wt, changes)), nil
-}
-
+// excludeIgnoredChanges removes changes that are ignored by the gitignore file.
 func excludeIgnoredChanges(w *git.Worktree, changes merkletrie.Changes) merkletrie.Changes {
 	patterns, err := gitignore.ReadPatterns(w.Filesystem, nil)
 	if err != nil {
@@ -98,7 +101,7 @@ func excludeIgnoredChanges(w *git.Worktree, changes merkletrie.Changes) merkletr
 		return changes
 	}
 
-	m := gitignore.NewMatcher(patterns)
+	gitIgnoreMatcher := gitignore.NewMatcher(patterns)
 
 	var res merkletrie.Changes
 	for _, ch := range changes {
@@ -113,7 +116,7 @@ func excludeIgnoredChanges(w *git.Worktree, changes merkletrie.Changes) merkletr
 		}
 		if len(path) != 0 {
 			isDir := (len(ch.To) > 0 && ch.To.IsDir()) || (len(ch.From) > 0 && ch.From.IsDir())
-			if m.Match(path, isDir) {
+			if gitIgnoreMatcher.Match(path, isDir) {
 				continue
 			}
 		}
