@@ -14,6 +14,12 @@ gwd is used to inspect the git history and determine that both of these packages
 
 If you think you've already read that, it's true. This excerpt comes from the blog of digitalocean in which they talk about [the organization of their monorepository](https://blog.digitalocean.com/cthulhu-organizing-go-code-in-a-scalable-repo/).
 
+### Install
+
+```
+go install github.com/alexisvisco/gwd@latest 
+```
+
 ### Commands
 
 Do `gwd --help` to see the list of commands and their usage.
