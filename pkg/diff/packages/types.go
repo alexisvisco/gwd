@@ -1,9 +1,9 @@
 package packages
 
 import (
+	"github.com/alexisvisco/gwd/pkg/vars"
 	"github.com/pkg/errors"
 	"path/filepath"
-	"strings"
 )
 
 // ImportPath is a type that represents a package name.
@@ -19,9 +19,11 @@ func GetImportPathFromPath(moduleName, modulePath, path string, isDir bool) (Imp
 	if isDir {
 		packageNameValue = path
 	} else {
-		if strings.HasSuffix(path, ".go") {
-			packageNameValue = filepath.Dir(path)
-		}
+		packageNameValue = filepath.Dir(path)
+	}
+
+	if moduleName, ok := vars.ModulePathToModuleName[packageNameValue]; ok {
+		return ImportPath(moduleName), nil
 	}
 
 	rel, err := filepath.Rel(modulePath, packageNameValue)
