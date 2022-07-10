@@ -19,8 +19,7 @@ var rootCmd = &cobra.Command{
 	Version: "0.1",
 	Use:     "gwd",
 	Short:   "Will check git diff of modules from go.work file and only returns modules and packages which runDiff from revision.",
-	Example: `- gta diff master feature/ok - will show the packages affected
-- gta run master feature/ok  - will tests the packages affected`,
+	Example: `- gta diff -p master - will show the modules affected`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		var err error
 
