@@ -6,6 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
+	"strings"
 
 	"github.com/alexisvisco/gwd/pkg/diff"
 	"github.com/alexisvisco/gwd/pkg/vars"
@@ -15,6 +16,32 @@ func runDiff(_ *cobra.Command, args []string) error {
 	modules, err := diff.Diff(vars.Repository, previousReference, currentReference)
 	if err != nil {
 		return err
+	}
+
+	if generatePipeline {
+		const job = `{job_name}-trigger:
+  stage: .post
+  trigger:
+    include: {module_path}/.gitlab-ci.yml
+    strategy: depend
+    forward:
+      pipeline_variables: true
+`
+
+		var generatedPipeline = ""
+
+		for _, mod := range modules.Modules {
+			jobName := strings.ReplaceAll(mod.ModulePath, "/", "-")
+
+			generatedJob := strings.ReplaceAll(job, "{job_name}", jobName)
+			generatedJob = strings.ReplaceAll(generatedJob, "{module_path}", mod.ModulePath)
+
+			generatedPipeline += generatedJob
+		}
+
+		output.Print(output.String(generatedPipeline))
+
+		return nil
 	}
 
 	if len(args) == 1 {
@@ -60,6 +87,14 @@ func init() {
 		"c",
 		"",
 		"set the current reference to diff with previous one.\nIt can be a tag, branch or commit hash",
+	)
+
+	diffCommand.Flags().BoolVarP(
+		&generatePipeline,
+		"generate-gitlab-pipeline",
+		"g",
+		false,
+		"generate a dynamic pipeline for gitlab",
 	)
 
 	rootCmd.AddCommand(diffCommand)
