@@ -20,7 +20,7 @@ func runDiff(_ *cobra.Command, args []string) error {
 
 	if generatePipeline {
 		const job = `{job_name}-trigger:
-  stage: .post
+  stage: build
   trigger:
     include: {module_path}/.gitlab-ci.yml
     strategy: depend
