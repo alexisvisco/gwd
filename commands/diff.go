@@ -26,6 +26,8 @@ func runDiff(_ *cobra.Command, args []string) error {
     strategy: depend
     forward:
       pipeline_variables: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 `
 
 		var generatedPipeline = ""
