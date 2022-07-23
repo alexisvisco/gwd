@@ -3,7 +3,6 @@ module github.com/alexisvisco/gwd
 go 1.18
 
 require (
-	github.com/MichaelTJones/walk v0.0.0-20161122175330-4748e29d5718
 	github.com/pkg/errors v0.9.1
 	github.com/samber/lo v1.25.0
 	github.com/spf13/cobra v1.5.0

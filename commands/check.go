@@ -25,11 +25,8 @@ func runCheck(_ *cobra.Command, args []string) error {
 }
 
 var checkCommand = &cobra.Command{
-	Use:   "check <module or path name>",
-	Short: "Return success exit code if the module is modified, arg 1 must be one of the module name or path",
-	Long: "This command accept 2 flags.\n" +
-		"If --current-ref is omitted, gta will use your current uncommitted runDiff.\n" +
-		"The command do nothing except printing the packages which should be tested.",
+	Use:     "check <module or path name>",
+	Short:   "Return success exit code if the module is modified, arg 1 must be one of the module name or path",
 	RunE:    runCheck,
 	Args:    cobra.ExactArgs(1),
 	Aliases: []string{"c"},

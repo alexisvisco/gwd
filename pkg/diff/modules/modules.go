@@ -3,14 +3,14 @@ package modules
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/MichaelTJones/walk"
 	"github.com/alexisvisco/gwd/pkg/diff/packages"
 	"github.com/alexisvisco/gwd/pkg/output"
 	"github.com/alexisvisco/gwd/pkg/parsing"
 	"github.com/alexisvisco/gwd/pkg/vars"
 	"github.com/samber/lo"
 	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
-	"os"
+	"io/fs"
+	"path/filepath"
 	"strings"
 )
 
@@ -107,8 +107,7 @@ func detectImportPathThatHaveChanged(changes merkletrie.Changes, modules *Module
 // that have been modified.
 func detectImportPathImported(modules *Modules, cache *cache) error {
 	for modulePathWhichCanImportModifiedPackage, moduleNameWhichCanImportModifiedPackage := range vars.ModulePathToModuleName {
-
-		err := walk.Walk(modulePathWhichCanImportModifiedPackage, func(path string, info os.FileInfo, err error) error {
+		err := filepath.WalkDir(modulePathWhichCanImportModifiedPackage, func(path string, info fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
@@ -128,7 +127,7 @@ func detectImportPathImported(modules *Modules, cache *cache) error {
 			}
 
 			for _, importPathWhichIsModifiedPackage := range parsing.GetImports(path) {
-				packageChange, ok := cache.modifiedImportPath[packages.ImportPath(importPathWhichIsModifiedPackage)]
+				packageChange, ok := cache.modifiedImportPath[importPathWhichIsModifiedPackage]
 				if !ok {
 					continue
 				}
