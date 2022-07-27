@@ -174,22 +174,14 @@ func getModuleFromFilePath(filePath string) (moduleName, modulePath string) {
 
 func (m Modules) Human() {
 	var modules = map[string]bool{}
-	var modulesPackage = map[string][]packages.ImportPath{}
 
 	for _, mod := range m.Modules {
 		modules[mod.ModulePath] = true
-		list, ok := modulesPackage[mod.ModulePath]
-		if !ok {
-			list = []packages.ImportPath{}
-		}
-		list = append(list, lo.Keys(mod.PackagesModified)...)
 	}
 
-	for mod := range modules {
-		fmt.Printf("%s %s\n", mod, strings.Join(lo.Map(modulesPackage[mod], func(t packages.ImportPath, i int) string {
-			return string(t)
-		}), ","))
-	}
+	fmt.Println(strings.Join(lo.Map(m.Modules, func(t *Changes, i int) string {
+		return t.ModulePath
+	}), " "))
 }
 
 func (m Modules) HumanVerbose() {

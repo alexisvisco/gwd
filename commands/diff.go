@@ -42,7 +42,7 @@ The --previous-ref (or -p) flag must be set (default is set to main branch).
 
 An optional argument can be set which is the module name or path, if it is not set, all modified packages of this module are returned.
 
-	$ gwd diff -> returns all modules that have been modified separated by newline
+	$ gwd diff -> returns all modules that have been modified separated by a space
 	$ gwd diff path_or_module_name -> returns all packages that have been modified for this module separated by newline
 
 --verbose or -V option will show more information about the modules, modified packages and their imported package.
