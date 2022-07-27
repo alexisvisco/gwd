@@ -173,10 +173,8 @@ func getModuleFromFilePath(filePath string) (moduleName, modulePath string) {
 }
 
 func (m Modules) Human() {
-	var modules = map[string]bool{}
-
-	for _, mod := range m.Modules {
-		modules[mod.ModulePath] = true
+	if len(m.Modules) == 0 {
+		return
 	}
 
 	fmt.Println(strings.Join(lo.Map(m.Modules, func(t *Changes, i int) string {
