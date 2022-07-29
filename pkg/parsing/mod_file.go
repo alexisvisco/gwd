@@ -1,9 +1,10 @@
 package parsing
 
 import (
+	"io/ioutil"
+
 	"github.com/pkg/errors"
 	"golang.org/x/mod/modfile"
-	"io/ioutil"
 )
 
 // GetModuleName retrieve the module name from a go file

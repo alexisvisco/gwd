@@ -3,13 +3,13 @@ package diff
 import (
 	"github.com/alexisvisco/gwd/pkg/diff/modules"
 	"github.com/alexisvisco/gwd/pkg/vars"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/format/gitignore"
+	"github.com/go-git/go-git/v5/utils/merkletrie"
+	"github.com/go-git/go-git/v5/utils/merkletrie/filesystem"
+	"github.com/go-git/go-git/v5/utils/merkletrie/noder"
 	"github.com/pkg/errors"
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing"
-	"gopkg.in/src-d/go-git.v4/plumbing/format/gitignore"
-	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
-	"gopkg.in/src-d/go-git.v4/utils/merkletrie/filesystem"
-	"gopkg.in/src-d/go-git.v4/utils/merkletrie/noder"
 )
 
 const localRef = ""

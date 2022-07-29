@@ -1,11 +1,12 @@
 package parsing
 
 import (
-	"github.com/alexisvisco/gwd/pkg/diff/packages"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"io/ioutil"
+
+	"github.com/alexisvisco/gwd/pkg/diff/packages"
 )
 
 // GetImports retrieve imports of a go file

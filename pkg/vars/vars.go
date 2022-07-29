@@ -1,6 +1,6 @@
 package vars
 
-import "gopkg.in/src-d/go-git.v4"
+import "github.com/go-git/go-git/v5"
 
 // Repository is the current git repository
 var Repository *git.Repository

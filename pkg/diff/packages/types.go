@@ -1,9 +1,10 @@
 package packages
 
 import (
+	"path/filepath"
+
 	"github.com/alexisvisco/gwd/pkg/vars"
 	"github.com/pkg/errors"
-	"path/filepath"
 )
 
 // ImportPath is a type that represents a package name.

@@ -3,15 +3,16 @@ package modules
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
+	"path/filepath"
+	"strings"
+
 	"github.com/alexisvisco/gwd/pkg/diff/packages"
 	"github.com/alexisvisco/gwd/pkg/output"
 	"github.com/alexisvisco/gwd/pkg/parsing"
 	"github.com/alexisvisco/gwd/pkg/vars"
+	"github.com/go-git/go-git/v5/utils/merkletrie"
 	"github.com/samber/lo"
-	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
-	"io/fs"
-	"path/filepath"
-	"strings"
 )
 
 type Modules struct {

@@ -3,7 +3,7 @@ package diff
 import (
 	"bytes"
 
-	"gopkg.in/src-d/go-git.v4/utils/merkletrie/noder"
+	"github.com/go-git/go-git/v5/utils/merkletrie/noder"
 )
 
 var emptyNoderHash = make([]byte, 24)

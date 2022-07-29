@@ -1,10 +1,11 @@
 package parsing
 
 import (
+	"io/ioutil"
+
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 	"golang.org/x/mod/modfile"
-	"io/ioutil"
 )
 
 // GetWorkspaceModulePaths retrieve the module paths from a workspace file

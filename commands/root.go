@@ -2,21 +2,21 @@ package commands
 
 import (
 	"fmt"
-	"github.com/alexisvisco/gwd/pkg/output"
-	"github.com/alexisvisco/gwd/pkg/parsing"
-	"github.com/alexisvisco/gwd/pkg/utils"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/alexisvisco/gwd/pkg/output"
+	"github.com/alexisvisco/gwd/pkg/parsing"
+	"github.com/alexisvisco/gwd/pkg/utils"
 	"github.com/spf13/cobra"
-	"gopkg.in/src-d/go-git.v4"
 
 	"github.com/alexisvisco/gwd/pkg/vars"
+	"github.com/go-git/go-git/v5"
 )
 
 var rootCmd = &cobra.Command{
-	Version: "0.1",
+	Version: "0.0.10",
 	Use:     "gwd",
 	Short:   "Will check git diff of modules from go.work file and only returns modules and packages which runDiff from revision.",
 	Example: `- gta diff -p master - will show the modules affected`,

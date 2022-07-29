@@ -1,7 +1,7 @@
 package packages
 
 import (
-	"gopkg.in/src-d/go-git.v4/utils/merkletrie"
+	"github.com/go-git/go-git/v5/utils/merkletrie"
 )
 
 // Modified represent a list of changes for a package
