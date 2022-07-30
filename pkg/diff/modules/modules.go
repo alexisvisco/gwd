@@ -3,6 +3,7 @@ package modules
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/alexisvisco/gwd/pkg/utils"
 	"io/fs"
 	"path/filepath"
 	"strings"
@@ -11,7 +12,6 @@ import (
 	"github.com/alexisvisco/gwd/pkg/output"
 	"github.com/alexisvisco/gwd/pkg/parsing"
 	"github.com/alexisvisco/gwd/pkg/vars"
-	"github.com/go-git/go-git/v5/utils/merkletrie"
 	"github.com/samber/lo"
 )
 
@@ -32,13 +32,13 @@ type cache struct {
 	modifiedImportPath  map[packages.ImportPath]packages.Modified
 }
 
-func FromChanges(changes merkletrie.Changes) (*Modules, error) {
+func FromFilesChanged(fileChanged []string) (*Modules, error) {
 	modules := &Modules{Modules: make([]*Changes, 0, len(vars.ModuleNameToModulePath))}
 	cache := &cache{
 		modulePathToChanges: make(map[string]*Changes),
 		modifiedImportPath:  make(map[packages.ImportPath]packages.Modified),
 	}
-	err := detectImportPathThatHaveChanged(changes, modules, cache)
+	err := detectImportPathThatHaveChanged(fileChanged, modules, cache)
 	if err != nil {
 		return nil, err
 	}
@@ -57,22 +57,12 @@ const (
 	ModuleChangeReasonModuleDependency = ModuleChangeReason("ModuleChangeReasonModuleDependency")
 )
 
-func detectImportPathThatHaveChanged(changes merkletrie.Changes, modules *Modules, c *cache) error {
-	for _, ch := range changes {
-		action, err := ch.Action()
-		if err != nil {
-			continue
-		}
-
-		path := ch.To
-		if path.String() == "" {
-			path = ch.From
-		}
-
-		moduleName, modulePath := getModuleFromFilePath(path.String())
+func detectImportPathThatHaveChanged(filePathChange []string, modules *Modules, c *cache) error {
+	for _, filePath := range filePathChange {
+		moduleName, modulePath := getModuleFromFilePath(filePath)
 
 		if moduleName == "" {
-			// the changes are not in a go module, so we need to ignore it
+			// the filePathChange are not in a go module, so we need to ignore it
 			continue
 		}
 
@@ -87,13 +77,13 @@ func detectImportPathThatHaveChanged(changes merkletrie.Changes, modules *Module
 			c.modulePathToChanges[modulePath] = changes
 		}
 
-		packageName, err := packages.GetImportPathFromPath(moduleName, modulePath, path.String(), path.IsDir())
+		packageName, err := packages.GetImportPathFromPath(moduleName, modulePath, filePath, utils.PathIsDir(filePath))
 		if err != nil {
 			return err
 		}
 		c.modifiedImportPath[packageName] = changes.PackagesModified
 
-		changes.PackagesModified.AddModifiedPackage(packageName, path.String(), action)
+		changes.PackagesModified.AddModifiedPackage(packageName, filePath)
 
 	}
 

@@ -1,7 +1,7 @@
 package packages
 
 import (
-	"github.com/go-git/go-git/v5/utils/merkletrie"
+	"github.com/alexisvisco/gwd/pkg/utils"
 )
 
 // Modified represent a list of changes for a package
@@ -17,7 +17,7 @@ type Details struct {
 	// Files is a map of file name to action (insert, delete, modified in a git sense)
 	// The action is a string that can be converted to merkletrie.Action
 	// The key is the file path
-	Files              map[string]string          `json:"files"`
+	Files              utils.StringSet            `json:"files"`
 	ImportedImportPath map[ImportPath]*ImportedBy `json:"imported_by"`
 }
 
@@ -28,14 +28,12 @@ type ImportedBy struct {
 }
 
 // AddModifiedPackage will add a file that have been modified
-func (p Modified) AddModifiedPackage(importPath ImportPath, file string, action merkletrie.Action) {
+func (p Modified) AddModifiedPackage(importPath ImportPath, file string) {
 	details, ok := p[importPath]
 	if !ok {
-		details = &Details{Files: make(map[string]string), ImportedImportPath: make(map[ImportPath]*ImportedBy)}
+		details = &Details{Files: utils.NewStringSet(file), ImportedImportPath: make(map[ImportPath]*ImportedBy)}
 		p[importPath] = details
 	}
-
-	details.Files[file] = action.String()
 }
 
 // AddImportPathWhichImportModifiedPackage will add the import path that import a package which have been modified
