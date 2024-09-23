@@ -3,11 +3,12 @@ package vars
 import (
 	"bufio"
 	"bytes"
-	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 // FilesChanged represent the list of files changed

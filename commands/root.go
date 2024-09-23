@@ -2,13 +2,14 @@ package commands
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/alexisvisco/gwd/pkg/diff/modules"
 	"github.com/alexisvisco/gwd/pkg/diff/packages"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
-	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/alexisvisco/gwd/pkg/output"
 	"github.com/alexisvisco/gwd/pkg/parsing"

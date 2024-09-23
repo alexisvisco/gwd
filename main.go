@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/alexisvisco/gwd/commands"
 	_ "net/http/pprof"
 	"os"
 	"runtime/pprof"
+
+	"github.com/alexisvisco/gwd/commands"
 )
 
 func main() {

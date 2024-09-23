@@ -3,10 +3,11 @@ package modules
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/alexisvisco/gwd/pkg/utils"
 	"io/fs"
 	"path/filepath"
 	"strings"
+
+	"github.com/alexisvisco/gwd/pkg/utils"
 
 	"github.com/alexisvisco/gwd/pkg/diff/packages"
 	"github.com/alexisvisco/gwd/pkg/output"
